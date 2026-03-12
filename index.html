@@ -1,14 +1,85 @@
-<!DOCTYPE html><html lang="es"> <head><meta charset="utf-8"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico" sizes="any"><link rel="shortcut icon" href="/favicon.ico"><meta name="viewport" content="width=device-width"><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.DmQZLfuR.js"></script><meta name="generator" content="Astro v6.0.2"><meta name="description" content="Portfolio de Manu Bravo. Desarrollo web y arquitectura de software."><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet"><title>Manu Bravo | Portfolio</title><link rel="stylesheet" href="/_astro/index@_@astro.CrvFkxGK.css"></head> <body> <div class="ambient ambient-top"></div> <div class="ambient ambient-bottom"></div>  <header class="header"> <div class="container nav"> <a class="brand" href="/">Manu Bravo</a> <nav class="site-nav" aria-label="Principal"> <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu">
+<!DOCTYPE html><html lang="es"> <head><meta charset="utf-8"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico" sizes="any"><link rel="shortcut icon" href="/favicon.ico"><meta name="viewport" content="width=device-width"><script>
+			(() => {
+				const THEME_KEY = "theme-preference";
+				const root = document.documentElement;
+				const media = window.matchMedia("(prefers-color-scheme: dark)");
+				const VALID = new Set(["system", "light", "dark"]);
+
+				const normalize = (value) => (VALID.has(value) ? value : "system");
+				const resolveTheme = (preference) =>
+					preference === "system" ? (media.matches ? "dark" : "light") : preference;
+
+				const applyTheme = (preference) => {
+					const safePreference = normalize(preference);
+					const resolved = resolveTheme(safePreference);
+					root.dataset.themePreference = safePreference;
+					root.dataset.theme = resolved;
+					window.dispatchEvent(
+						new CustomEvent("themechange", {
+							detail: { preference: safePreference, resolved },
+						}),
+					);
+				};
+
+				const getStoredPreference = () => normalize(localStorage.getItem(THEME_KEY) ?? "system");
+				window.__getThemePreference = () =>
+					normalize(root.dataset.themePreference ?? getStoredPreference());
+				window.__setThemePreference = (preference) => {
+					const safePreference = normalize(preference);
+					localStorage.setItem(THEME_KEY, safePreference);
+					applyTheme(safePreference);
+				};
+
+				applyTheme(getStoredPreference());
+
+				const onSystemThemeChange = () => {
+					if ((root.dataset.themePreference ?? "system") === "system") {
+						applyTheme("system");
+					}
+				};
+
+				if (typeof media.addEventListener === "function") {
+					media.addEventListener("change", onSystemThemeChange);
+				} else {
+					media.addListener(onSystemThemeChange);
+				}
+			})();
+		</script><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.DmQZLfuR.js"></script><meta name="generator" content="Astro v6.0.2"><meta name="description" content="Portfolio de Manu Bravo. Desarrollo web y arquitectura de software."><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet"><title>Manu Bravo | Portfolio</title><link rel="stylesheet" href="/_astro/index@_@astro.DcXz-ci9.css"></head> <body> <div class="ambient ambient-top"></div> <div class="ambient ambient-bottom"></div>  <header class="header"> <div class="container nav"> <a class="brand" href="/">Manu Bravo</a> <nav class="site-nav" aria-label="Principal"> <div class="nav-controls"> <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu">
 Menú
-</button> <ul id="site-menu" class="nav-links"> <li><a href="#experiencia">Experiencia</a></li><li><a href="#proyectos">Proyectos</a></li><li><a href="#educacion">Educación</a></li><li><a href="#sobre-mi">Sobre mí</a></li><li><a href="#contacto">Contacto</a></li> </ul> </nav> </div> </header> <script>
+</button> </div> <ul id="site-menu" class="nav-links"> <li><a href="#experiencia">Experiencia</a></li><li><a href="#proyectos">Proyectos</a></li><li><a href="#educacion">Educación</a></li><li><a href="#sobre-mi">Sobre mí</a></li><li><a href="#contacto">Contacto</a></li> </ul> <div class="theme-switcher"> <button class="theme-trigger" type="button" aria-label="Cambiar tema" aria-haspopup="menu" aria-expanded="false" aria-controls="theme-menu"> <span class="theme-trigger-icon" aria-hidden="true">◐</span> </button> <ul id="theme-menu" class="theme-menu" role="menu" aria-label="Seleccion de tema"> <li> <button type="button" role="menuitemradio" data-theme-option="system" aria-checked="true">
+Sistema
+</button> </li> <li> <button type="button" role="menuitemradio" data-theme-option="light" aria-checked="false">
+Claro
+</button> </li> <li> <button type="button" role="menuitemradio" data-theme-option="dark" aria-checked="false">
+Oscuro
+</button> </li> </ul> </div> </nav> </div> </header> <script>
 	document.querySelectorAll(".site-nav").forEach((nav) => {
 		const toggle = nav.querySelector(".menu-toggle");
 		const links = nav.querySelectorAll(".nav-links a");
+		const themeSwitcher = nav.querySelector(".theme-switcher");
+		const themeTrigger = nav.querySelector(".theme-trigger");
+		const themeOptions = nav.querySelectorAll("[data-theme-option]");
 		if (!toggle) return;
 
 		const closeMenu = () => {
 			nav.classList.remove("is-open");
 			toggle.setAttribute("aria-expanded", "false");
+		};
+
+		const closeThemeMenu = () => {
+			if (!themeSwitcher || !themeTrigger) return;
+			themeSwitcher.classList.remove("is-open");
+			themeTrigger.setAttribute("aria-expanded", "false");
+		};
+
+		const updateThemeUi = (preference) => {
+			const currentPreference = ["system", "light", "dark"].includes(preference) ? preference : "system";
+
+			themeOptions.forEach((option) => {
+				const isSelected = option.getAttribute("data-theme-option") === currentPreference;
+				option.setAttribute("aria-checked", String(isSelected));
+				option.classList.toggle("is-selected", isSelected);
+			});
 		};
 
 		toggle.addEventListener("click", () => {
@@ -20,10 +91,79 @@ Menú
 			link.addEventListener("click", closeMenu);
 		});
 
+		if (themeSwitcher && themeTrigger) {
+			const getThemePreference = () =>
+				typeof window.__getThemePreference === "function"
+					? window.__getThemePreference()
+					: "system";
+
+			const setThemePreference = (preference) => {
+				if (typeof window.__setThemePreference === "function") {
+					window.__setThemePreference(preference);
+				}
+				updateThemeUi(preference);
+			};
+
+			updateThemeUi(getThemePreference());
+
+			themeTrigger.addEventListener("click", (event) => {
+				event.stopPropagation();
+				const isOpen = themeSwitcher.classList.toggle("is-open");
+				themeTrigger.setAttribute("aria-expanded", String(isOpen));
+			});
+
+			themeOptions.forEach((option) => {
+				option.addEventListener("click", () => {
+					const preference = option.getAttribute("data-theme-option") || "system";
+					setThemePreference(preference);
+					closeThemeMenu();
+				});
+			});
+
+			window.addEventListener("themechange", (event) => {
+				updateThemeUi(event.detail?.preference || "system");
+			});
+
+			document.addEventListener("click", (event) => {
+				if (!themeSwitcher.contains(event.target)) {
+					closeThemeMenu();
+				}
+			});
+
+			document.addEventListener("keydown", (event) => {
+				if (event.key === "Escape") {
+					closeThemeMenu();
+				}
+			});
+		}
+
 		window.addEventListener("resize", () => {
 			if (window.innerWidth > 820) {
 				closeMenu();
 			}
 		});
 	});
-</script> <main class="container main"> <section class="hero reveal"> <p class="eyebrow">Senior Software Engineer</p> <h1>Diseño soluciones backend orientadas a producto con una arquitectura limpia, escalable y lista para evolucionar.</h1> <p class="hero-summary">Desarrollador especializado en JavaScript con 5 años de experiencia. Enfocado en el diseño de soluciones backend con mentalidad orientada a producto, utilizando Node.js, NestJS y PayloadCMS, aplicando principios SOLID y Arquitectura Hexagonal. Experiencia en microservicios, APIs REST, entornos headless y CI/CD con Docker, Azure, AWS y Terraform.</p> <div class="hero-actions"> <a class="btn primary" href="#contacto">Hablemos</a> <a class="btn ghost" href="#experiencia">Ver experiencia</a> </div> <p class="meta">Donde sea, pero en España</p> </section> <section class="reveal delay-2" id="experiencia"> <div class="section-heading"> <h2>Experiencia profesional</h2> <p>Trayectoria en consultoría, startups y desarrollo de producto.</p> </div> <div class="experience-list"> <article class="experience-item card is-current"> <p class="experience-role">NodeJS Developer</p> <h3 class="experience-company">ALTEN Spain</h3>  <p class="experience-meta"> Abr. 2025 - Actualidad · Barcelona, España · Remoto · 1 año </p> <p class="experience-summary">Liderazgo técnico del core content management platform con PayloadCMS, migrando el sistema editorial desde WordPress y definiendo una arquitectura headless orientada a producto.</p> <ul class="experience-points"> <li>Diseño e implementación de backoffice custom con Next.js y APIs a medida para flujos editoriales avanzados.</li><li>Desarrollo de microservicios en NestJS integrados con Azure Functions, Event Grid, Blob Storage, CosmosDB, Redis y PostgreSQL.</li><li>Construcción de Experience API/BFF para SSR con Astro y MedusaJS, aplicando caching por capas y contratos aislados para frontend.</li> </ul> <ul class="tags"> <li>PayloadCMS</li><li>NestJS</li><li>Next.js</li><li>Astro</li><li>Azure</li><li>AWS</li> </ul> </article><article class="experience-item card "> <p class="experience-role">NodeJS Developer</p> <h3 class="experience-company">Freelancer</h3> <p class="experience-clients">Clientes: TeamNet, Excelia y Timestamp</p> <p class="experience-meta"> Jun. 2023 - Dic. 2024 · Madrid, España · Remoto · 1 año y 7 meses </p> <p class="experience-summary">Etapa como profesional independiente colaborando en varios contratos de consultoría y producto para diferentes compañías.</p> <ul class="experience-points"> <li>TeamNet: modernización de monolito, app móvil con Angular 18 + Ionic + Capacitor y soporte backend.</li><li>Excelia: desarrollo de reporting masivo con Angular, Node.js, Azure Functions, Snowflake y CosmosDB.</li><li>Timestamp: backend de alto rendimiento con NestJS y arquitectura event-driven sobre Kafka y AWS.</li> </ul> <ul class="tags"> <li>Node.js</li><li>NestJS</li><li>Angular</li><li>Ionic</li><li>Kafka</li><li>Azure</li><li>AWS</li> </ul> </article><article class="experience-item card "> <p class="experience-role">NodeJS Developer</p> <h3 class="experience-company">Quantumfrog GmbH</h3>  <p class="experience-meta"> Mar. 2021 - Abr. 2023 · Oldenburg, Alemania · Híbrido · 2 años y 2 meses </p> <p class="experience-summary">Participación en múltiples productos aplicando arquitectura hexagonal y estrategias de testing para garantizar mantenibilidad y escalabilidad.</p> <ul class="experience-points"> <li>Desarrollo full stack en proyectos de gestión, cuestionarios y apps con integración de APIs externas.</li><li>Construcción de app móvil de domótica con ExpressJS, Angular + Material, Ionic y Capacitor.</li> </ul> <ul class="tags"> <li>TypeScript</li><li>ExpressJS</li><li>Angular</li><li>Ionic</li><li>Hexagonal</li> </ul> </article><article class="experience-item card "> <p class="experience-role">Java Developer</p> <h3 class="experience-company">Grupo JPG S.A.</h3>  <p class="experience-meta"> Sep. 2020 - Feb. 2021 · Madrid, España · Presencial · 6 meses </p> <p class="experience-summary">Participación en el desarrollo de una aplicación de control de dispositivos y en la migración tecnológica del stack Java.</p> <ul class="experience-points"> <li>Migración de Jakarta a SpringBoot y desarrollo de registro basado en QR.</li><li>Trabajo en migración de base de datos hacia Azure Cloud.</li> </ul> <ul class="tags"> <li>Java</li><li>SpringBoot</li><li>OpenAPI</li><li>Azure</li> </ul> </article> </div> </section> <section class="card reveal delay-3" id="proyectos"> <h2>Proyectos</h2> <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisi. Praesent egestas, nibh non volutpat eleifend, sem lorem varius lorem, vel volutpat eros turpis id risus.</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse potenti. Integer dictum magna ac tincidunt semper.</p> </section><section class="card reveal delay-3" id="educacion"> <h2>Educación</h2> <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vulputate, lacus non ullamcorper pellentesque, arcu arcu tincidunt velit, at tempor ipsum justo sit amet lectus.</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In quis nibh non odio fermentum iaculis sed et augue.</p> </section><section class="card reveal delay-3" id="sobre-mi"> <h2>Sobre mí</h2> <p>Soy desarrollador con 5 años de experiencia. He participado en distintos proyectos y también he trabajado en Alemania, donde me desenvolví en alemán e inglés.</p><p>Cuento con una doble titulación en Informática, completada entre España y Alemania.</p><p>Mi stack se centra principalmente en NodeJS y TypeScript para backend, sobre todo con NestJS. También me apasiona trabajar con Java + Spring Boot y Python + FastAPI, intentando usar Docker siempre que es posible.</p><p>En mi tiempo libre sigo aprendiendo tecnologías de frontend como React y explorando herramientas de automatización como n8n.</p> </section> <section class="card contact reveal delay-3" id="contacto"> <h2>Contacto</h2> <p>Si tienes una idea, proyecto o colaboración, escríbeme y lo revisamos.</p> <form class="contact-form" action="#" method="post"> <label for="name">Nombre</label> <input id="name" name="name" type="text" placeholder="Tu nombre"> <label for="email">Email</label> <input id="email" name="email" type="email" placeholder="tu@email.com"> <label for="message">Mensaje</label> <textarea id="message" name="message" rows="5" placeholder="Cuéntame brevemente tu proyecto"></textarea> <button class="btn primary" type="submit">Enviar (demo)</button> </form> <div class="contact-links"> <a href="https://linkedin.com/in/manu-bravo/" target="_blank" rel="noreferrer">LinkedIn</a> <a href="https://github.com/manubravo" target="_blank" rel="noreferrer">GitHub</a> </div> </section> </main> <footer class="container footer"> <p>2026 - Manu Bravo. Hecho con Astro.</p> </footer>  </body></html>
+</script> <main class="container main"> <section class="hero reveal"> <p class="eyebrow">Senior Software Engineer</p> <h1>Diseño soluciones backend orientadas a producto con una arquitectura limpia, escalable y lista para evolucionar.</h1> <p class="hero-summary">Desarrollador especializado en JavaScript con 5 años de experiencia. Enfocado en el diseño de soluciones backend con mentalidad orientada a producto, utilizando Node.js, NestJS y PayloadCMS, aplicando principios SOLID y Arquitectura Hexagonal. Experiencia en microservicios, APIs REST, entornos headless y CI/CD con Docker, Azure, AWS y Terraform.</p> <div class="hero-actions"> <a class="btn primary" href="#contacto">Hablemos</a> <a class="btn ghost" href="#experiencia">Ver experiencia</a> </div> <p class="meta">Donde sea, pero en España</p> </section> <section class="reveal delay-2" id="experiencia"> <div class="section-heading"> <h2>Experiencia profesional</h2> <p>Trayectoria en consultoría, startups y desarrollo de producto.</p> </div> <div class="experience-list"> <article class="experience-item card is-current"> <p class="experience-role">NodeJS Developer</p> <h3 class="experience-company">ALTEN Spain</h3>  <p class="experience-meta"> Abr. 2025 - Actualidad · Barcelona, España · Remoto · 1 año </p> <p class="experience-summary">Liderazgo técnico del core content management platform con PayloadCMS, migrando el sistema editorial desde WordPress y definiendo una arquitectura headless orientada a producto.</p> <ul class="experience-points"> <li>Diseño e implementación de backoffice custom con Next.js y APIs a medida para flujos editoriales avanzados.</li><li>Desarrollo de microservicios en NestJS integrados con Azure Functions, Event Grid, Blob Storage, CosmosDB, Redis y PostgreSQL.</li><li>Construcción de Experience API/BFF para SSR con Astro y MedusaJS, aplicando caching por capas y contratos aislados para frontend.</li> </ul> <ul class="tags"> <li>PayloadCMS</li><li>NestJS</li><li>Next.js</li><li>Astro</li><li>Azure</li><li>AWS</li> </ul> </article><article class="experience-item card "> <p class="experience-role">NodeJS Developer</p> <h3 class="experience-company">Freelancer</h3> <p class="experience-clients">Clientes: TeamNet, Excelia y Timestamp</p> <p class="experience-meta"> Jun. 2023 - Dic. 2024 · Madrid, España · Remoto · 1 año y 7 meses </p> <p class="experience-summary">Etapa como profesional independiente colaborando en varios contratos de consultoría y producto para diferentes compañías.</p> <ul class="experience-points"> <li>TeamNet: modernización de monolito, app móvil con Angular 18 + Ionic + Capacitor y soporte backend.</li><li>Excelia: desarrollo de reporting masivo con Angular, Node.js, Azure Functions, Snowflake y CosmosDB.</li><li>Timestamp: backend de alto rendimiento con NestJS y arquitectura event-driven sobre Kafka y AWS.</li> </ul> <ul class="tags"> <li>Node.js</li><li>NestJS</li><li>Angular</li><li>Ionic</li><li>Kafka</li><li>Azure</li><li>AWS</li> </ul> </article><article class="experience-item card "> <p class="experience-role">NodeJS Developer</p> <h3 class="experience-company">Quantumfrog GmbH</h3>  <p class="experience-meta"> Mar. 2021 - Abr. 2023 · Oldenburg, Alemania · Híbrido · 2 años y 2 meses </p> <p class="experience-summary">Participación en múltiples productos aplicando arquitectura hexagonal y estrategias de testing para garantizar mantenibilidad y escalabilidad.</p> <ul class="experience-points"> <li>Desarrollo full stack en proyectos de gestión, cuestionarios y apps con integración de APIs externas.</li><li>Construcción de app móvil de domótica con ExpressJS, Angular + Material, Ionic y Capacitor.</li> </ul> <ul class="tags"> <li>TypeScript</li><li>ExpressJS</li><li>Angular</li><li>Ionic</li><li>Hexagonal</li> </ul> </article><article class="experience-item card "> <p class="experience-role">Java Developer</p> <h3 class="experience-company">Grupo JPG S.A.</h3>  <p class="experience-meta"> Sep. 2020 - Feb. 2021 · Madrid, España · Presencial · 6 meses </p> <p class="experience-summary">Participación en el desarrollo de una aplicación de control de dispositivos y en la migración tecnológica del stack Java.</p> <ul class="experience-points"> <li>Migración de Jakarta a SpringBoot y desarrollo de registro basado en QR.</li><li>Trabajo en migración de base de datos hacia Azure Cloud.</li> </ul> <ul class="tags"> <li>Java</li><li>SpringBoot</li><li>OpenAPI</li><li>Azure</li> </ul> </article> </div> </section> <section class="card reveal delay-3" id="proyectos"> <h2>Proyectos</h2> <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisi. Praesent egestas, nibh non volutpat eleifend, sem lorem varius lorem, vel volutpat eros turpis id risus.</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse potenti. Integer dictum magna ac tincidunt semper.</p> </section><section class="card reveal delay-3" id="educacion"> <h2>Educación</h2> <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vulputate, lacus non ullamcorper pellentesque, arcu arcu tincidunt velit, at tempor ipsum justo sit amet lectus.</p><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In quis nibh non odio fermentum iaculis sed et augue.</p> </section><section class="card reveal delay-3" id="sobre-mi"> <h2>Sobre mí</h2> <p>Soy desarrollador con 5 años de experiencia. He participado en distintos proyectos y también he trabajado en Alemania, donde me desenvolví en alemán e inglés.</p><p>Cuento con una doble titulación en Informática, completada entre España y Alemania.</p><p>Mi stack se centra principalmente en NodeJS y TypeScript para backend, sobre todo con NestJS. También me apasiona trabajar con Java + Spring Boot y Python + FastAPI, intentando usar Docker siempre que es posible.</p><p>En mi tiempo libre sigo aprendiendo tecnologías de frontend como React y explorando herramientas de automatización como n8n.</p> </section> <section class="card contact reveal delay-3" id="contacto"> <h2>Contacto</h2> <p>Si tienes una idea, proyecto o colaboración, escríbeme y lo revisamos.</p> <form class="contact-form" action="#" method="post"> <label for="name">Nombre</label> <input id="name" name="name" type="text" placeholder="Tu nombre" required> <label for="email">Email</label> <input id="email" name="email" type="email" placeholder="tu@email.com" required> <label for="message">Mensaje</label> <textarea id="message" name="message" rows="5" placeholder="Cuéntame brevemente tu proyecto" required></textarea> <button class="btn primary" type="submit">Enviar</button> </form> <p class="contact-notice" role="status" aria-live="polite" hidden>¡Enviado!</p> <div class="contact-links"> <a href="https://linkedin.com/in/manu-bravo/" target="_blank" rel="noreferrer">LinkedIn</a> <a href="https://github.com/manubravo" target="_blank" rel="noreferrer">GitHub</a> </div> </section> <script>
+	document.querySelectorAll(".contact").forEach((section) => {
+		const form = section.querySelector(".contact-form");
+		const notice = section.querySelector(".contact-notice");
+		if (!form || !notice) return;
+
+		let hideTimeout;
+		form.addEventListener("submit", (event) => {
+			event.preventDefault();
+			if (!form.reportValidity()) return;
+
+			form.reset();
+			notice.hidden = false;
+			notice.classList.add("is-visible");
+			notice.textContent = "¡Enviado! Te responderé pronto.";
+
+			clearTimeout(hideTimeout);
+			hideTimeout = setTimeout(() => {
+				notice.classList.remove("is-visible");
+				notice.hidden = true;
+			}, 2800);
+		});
+	});
+</script> </main> <footer class="container footer"> <p>2026 - Manu Bravo. Hecho con Astro.</p> </footer>  </body></html>
